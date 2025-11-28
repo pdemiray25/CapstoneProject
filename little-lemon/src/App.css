@@ -1,38 +1,134 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  padding: 20px 40px;
+  background-color: #ffffff;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.nav-list {
+  display: flex;
+  gap: 20px;
+  list-style: none;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.nav-list li a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+}
+.highlights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.dish-card {
+  background-color: #FBDABB;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+}
+.footer {
+  background-color: #495E57;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.logo-img {
+  height: 60px; /* logonun boyutunu ayarla */
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Markazi Text', serif;
+  color: #495E57;
+  margin: 0 0 10px 0;
+}
+
+h1 {
+  font-size: 64px; /* Display Title */
+  font-weight: 500;
+}
+
+h2 {
+  font-size: 40px; /* Sub-title */
+  font-weight: 400;
+}
+
+h3 {
+  font-size: 20px; /* Section Titles */
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+h4, h5, h6 {
+  font-size: 16-18px;
+  font-weight: 600;
+}
+
+/* Paragraphs */
+p {
+  font-family: 'Karla', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333333;
+  margin-bottom: 15px;
+}
+
+/* Span (highlight text) */
+span {
+  font-weight: 500;
+  color: #F4CE14; /* accent */
+}
+nav {
+  font-family: 'Karla', sans-serif;
+}
+
+nav ul {
+  display: flex;
+  list-style: none;
+  gap: 20px;
+  padding: 0;
+  margin: 0;
+}
+
+nav li {
+  font-weight: 600;
+}
+
+nav a {
+  text-decoration: none;
+  color: #1f1f1f;
+  transition: color 0.3s;
+}
+
+nav a:hover {
+  color: #F4CE14;
+}
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+
+@media (max-width: 768px) {
+  .nav-list {
+    flex-direction: column;
+    gap: 10px;
   }
-  to {
-    transform: rotate(360deg);
+
+  .highlights-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .header, .footer {
+    padding: 15px;
   }
 }
