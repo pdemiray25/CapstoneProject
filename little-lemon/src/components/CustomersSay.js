@@ -1,11 +1,14 @@
-export default function CustomersSay() {
+function CustomersSay() {
   return (
-    <section className="testimonials">
-      <h2>Testimonials</h2>
-       <section>
-      <h2>Testimonials</h2>
-    </section>
-      
+    <section className="testimonials" aria-labelledby="testimonials-heading">
+      <h2 id="testimonials-heading">Testimonials</h2>
+      <div className="testimonials-grid">
+        <article className="card">Testimonial 1</article>
+        <article className="card">Testimonial 2</article>
+        <article className="card">Testimonial 3</article>
+      </div>
     </section>
   );
 }
+
+export default CustomersSay;

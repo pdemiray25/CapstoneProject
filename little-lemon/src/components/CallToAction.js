@@ -1,13 +1,35 @@
-import React from "react";
+import { useNavigate } from 'react-router-dom';
+import heroImage from '../assets/restaurant.jpg'; // görseli import ettik
 
-const CallToAction = () => {
+function CallToAction() {
+  const navigate = useNavigate();
+
+  const handleReserveClick = () => {
+    navigate('/booking');
+  };
+
   return (
-    <section className="call-to-action">
-      <h1>Welcome to Little Lemon</h1>
-      <p>Delicious Mediterranean cuisine in Chicago.</p>
-      <button>Book a Table</button>
+    <section className="hero" aria-labelledby="hero-heading">
+      <div className="hero-text">
+        <h1 id="hero-heading">Welcome to Little Lemon</h1>
+        <p className="hero-location">Chicago</p>
+        <p className="hero-description">
+          Delicious Mediterranean cuisine in Chicago.
+        </p>
+      
+        <button
+          type="button"
+          className="primary-button"
+          onClick={handleReserveClick}
+        >
+          Book a Table
+        </button>
+      </div>
+      <div className="hero-image-placeholder">
+        <img src={heroImage} alt="Little Lemon Restaurant" />
+      </div>
     </section>
   );
-};
+}
 
 export default CallToAction;

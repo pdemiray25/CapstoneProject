@@ -1,39 +1,36 @@
-/* global fetchAPI, submitAPI */
-import React, { useReducer } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
-import HomePage from "../pages/HomePage";
-import BookingPage from "../pages/BookingPage";
-import ConfirmedBooking from "./ConfirmedBooking";
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import { useReducer } from 'react';
+import HomePage from '../pages/HomePage';
+import BookingPage from '../pages/BookingPage';
 
-// STEP 2 — Başlangıç için bugünün tarihini al
-const today = new Date().toISOString().split("T")[0];
+import ConfirmedBooking from './ConfirmedBooking';
+import { initializeTimes, updateTimes } from '../utils/times';
 
-// STEP 2 — Initial available times (API’den al)
-const initializeTimes = () => {
-  return fetchAPI(today);
-};
-
-// STEP 2 — Update times based on selected date (API’den al)
-const updateTimes = (state, action) => {
-  if (action.type === "UPDATE_TIMES") {
-    return fetchAPI(action.payload);
-  }
-  return state;
-};
-
-const Main = () => {
-  const [availableTimes, dispatch] = useReducer(updateTimes, [], initializeTimes);
+function Main() {
+  const [availableTimes, dispatch] = useReducer(
+    updateTimes,
+    [],
+    initializeTimes
+  );
   const navigate = useNavigate();
 
-  // STEP 3 — Form submit fonksiyonu
-  const submitForm = (formData) => {
-    if (submitAPI(formData)) {
-      navigate("/confirmed"); // rezervasyon başarılıysa confirmation page’e yönlendir
+  function submitForm(formData) {
+    let isSuccess = true;
+    if (typeof window !== 'undefined' && typeof window.submitAPI === 'function') {
+      isSuccess = window.submitAPI(formData);
+    } else {
+      console.warn('submitAPI is not available on window; assuming success for local development.');
     }
-  };
+
+    if (isSuccess) {
+      navigate('/confirmed');
+    } else {
+      alert('Something went wrong. Please try again.');
+    }
+  }
 
   return (
-    <main>
+    <main className="main">
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route
@@ -42,7 +39,7 @@ const Main = () => {
             <BookingPage
               availableTimes={availableTimes}
               dispatch={dispatch}
-              submitForm={submitForm} // BookingForm'a prop olarak iletiliyor
+              submitForm={submitForm}
             />
           }
         />
@@ -50,7 +47,6 @@ const Main = () => {
       </Routes>
     </main>
   );
-};
+}
 
 export default Main;
-export { initializeTimes, updateTimes };

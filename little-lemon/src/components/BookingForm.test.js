@@ -1,75 +1,120 @@
-import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
-import BookingForm from "./BookingForm";
+import { render, screen, fireEvent } from '@testing-library/react';
+import BookingForm from './BookingForm';
 
-// Mock dispatch ve submitForm
-const mockDispatch = jest.fn();
-const mockSubmitForm = jest.fn();
+const renderBookingForm = (overrideProps = {}) => {
+  const defaultProps = {
+    availableTimes: ['17:00', '18:00'],
+    dispatch: jest.fn(),
+    submitForm: jest.fn(),
+  };
 
-describe("BookingForm component", () => {
-  beforeEach(() => {
-    render(
-      <BookingForm
-        availableTimes={["17:00", "18:00", "19:00"]}
-        dispatch={mockDispatch}
-        submitForm={mockSubmitForm}
-      />
-    );
+  const props = { ...defaultProps, ...overrideProps };
+
+  render(<BookingForm {...props} />);
+
+  return props; 
+};
+
+describe('BookingForm – HTML5 validation attributes', () => {
+  test('date input has required and min attributes', () => {
+    renderBookingForm();
+
+    const dateInput = screen.getByLabelText(/choose date/i);
+    expect(dateInput).toBeRequired();
+
+    const today = new Date().toISOString().split('T')[0];
+    expect(dateInput).toHaveAttribute('min', today);
   });
 
-  test("renders all input fields with correct HTML5 attributes", () => {
-    const dateInput = screen.getByLabelText(/choose date/i);
-    expect(dateInput).toHaveAttribute("required");
+  test('time select is required', () => {
+    renderBookingForm();
 
     const timeSelect = screen.getByLabelText(/choose time/i);
-    expect(timeSelect).toHaveAttribute("required");
+    expect(timeSelect).toBeRequired();
+  });
+
+  test('guests input is type number with min=1, max=10 and required', () => {
+    renderBookingForm();
 
     const guestsInput = screen.getByLabelText(/number of guests/i);
-    expect(guestsInput).toHaveAttribute("required");
-    expect(guestsInput).toHaveAttribute("min", "1");
-    expect(guestsInput).toHaveAttribute("max", "10");
+    expect(guestsInput).toBeRequired();
+    expect(guestsInput).toHaveAttribute('type', 'number');
+    expect(guestsInput).toHaveAttribute('min', '1');
+    expect(guestsInput).toHaveAttribute('max', '10');
+  });
+});
 
-    const occasionSelect = screen.getByLabelText(/occasion/i);
-    expect(occasionSelect).toHaveAttribute("required");
+describe('BookingForm – JavaScript validation & submission', () => {
+  test('shows error and disables submit when guests < 1', () => {
+    renderBookingForm();
 
-    const submitButton = screen.getByRole("button", { name: /make your reservation/i });
+    const dateInput = screen.getByLabelText(/choose date/i);
+    const timeSelect = screen.getByLabelText(/choose time/i);
+    const guestsInput = screen.getByLabelText(/number of guests/i);
+    const submitButton = screen.getByRole('button', {
+      name: /make your reservation/i,
+    });
+
+    const today = new Date().toISOString().split('T')[0];
+
+ 
+    fireEvent.change(dateInput, { target: { value: today } });
+    fireEvent.change(timeSelect, { target: { value: '17:00' } });
+
+ 
+    fireEvent.change(guestsInput, { target: { value: '0' } });
+    fireEvent.blur(guestsInput); 
+
+
+    expect(
+      screen.getByText(/at least 1 guest required/i)
+    ).toBeInTheDocument();
+
+
     expect(submitButton).toBeDisabled();
   });
 
-  test("enables submit button when all fields are valid", () => {
-    const dateInput = screen.getByLabelText(/choose date/i);
-    const timeSelect = screen.getByLabelText(/choose time/i);
+  test('shows error when guests > 10', () => {
+    renderBookingForm();
+
     const guestsInput = screen.getByLabelText(/number of guests/i);
-    const occasionSelect = screen.getByLabelText(/occasion/i);
-    const submitButton = screen.getByRole("button", { name: /make your reservation/i });
 
-    fireEvent.change(dateInput, { target: { value: "2025-12-31" } });
-    fireEvent.change(timeSelect, { target: { value: "17:00" } });
-    fireEvent.change(guestsInput, { target: { value: 4 } });
-    fireEvent.change(occasionSelect, { target: { value: "Birthday" } });
+    fireEvent.change(guestsInput, { target: { value: '11' } });
+    fireEvent.blur(guestsInput);
 
-    expect(submitButton).not.toBeDisabled();
+    expect(
+      screen.getByText(/maximum 10 guests allowed/i)
+    ).toBeInTheDocument();
   });
 
-  test("calls submitForm with correct data when form is submitted", () => {
+  test('enables submit and calls submitForm with correct data when form is valid', () => {
+    const { submitForm } = renderBookingForm();
+
     const dateInput = screen.getByLabelText(/choose date/i);
     const timeSelect = screen.getByLabelText(/choose time/i);
     const guestsInput = screen.getByLabelText(/number of guests/i);
-    const occasionSelect = screen.getByLabelText(/occasion/i);
-    const submitButton = screen.getByRole("button", { name: /make your reservation/i });
+    const submitButton = screen.getByRole('button', {
+      name: /make your reservation/i,
+    });
 
-    fireEvent.change(dateInput, { target: { value: "2025-12-31" } });
-    fireEvent.change(timeSelect, { target: { value: "17:00" } });
-    fireEvent.change(guestsInput, { target: { value: 4 } });
-    fireEvent.change(occasionSelect, { target: { value: "Birthday" } });
+    const today = new Date().toISOString().split('T')[0];
+
+
+    fireEvent.change(dateInput, { target: { value: today } });
+    fireEvent.change(timeSelect, { target: { value: '17:00' } });
+    fireEvent.change(guestsInput, { target: { value: '4' } });
+
+
+    expect(submitButton).toBeEnabled();
 
     fireEvent.click(submitButton);
 
-    expect(mockSubmitForm).toHaveBeenCalledWith({
-      date: "2025-12-31",
-      time: "17:00",
+    expect(submitForm).toHaveBeenCalledTimes(1);
+    expect(submitForm).toHaveBeenCalledWith({
+      date: today,
+      time: '17:00',
       guests: 4,
-      occasion: "Birthday"
+      occasion: 'Birthday',
     });
   });
 });
